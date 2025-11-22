@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FamTalk 서버 테스트</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        .test-section h2 {
+            color: #667eea;
+            margin-top: 0;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+        input {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 300px;
+            margin-right: 10px;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status.success {
+            background: #4caf50;
+            color: white;
+        }
+        .status.error {
+            background: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 FamTalk 서버 테스트</h1>
+        
+        <div class="test-section">
+            <h2>1. GET /ping 테스트</h2>
+            <button onclick="testPing()">Ping 테스트</button>
+            <div id="pingResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. POST /result 테스트</h2>
+            <input type="text" id="answerInput" placeholder="답변을 입력하세요..." value="안녕하세요!">
+            <button onclick="testResult()">Result 테스트</button>
+            <div id="resultOutput" class="result" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        async function testPing() {
+            const resultDiv = document.getElementById('pingResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '요청 중...';
+            
+            try {
+                const response = await fetch('http://localhost:3000/ping');
+                const data = await response.json();
+                resultDiv.innerHTML = `✅ 성공!\n\n응답: ${JSON.stringify(data, null, 2)}`;
+                resultDiv.style.borderLeftColor = '#4caf50';
+            } catch (error) {
+                resultDiv.innerHTML = `❌ 오류 발생!\n\n${error.message}\n\n서버가 실행 중인지 확인하세요.`;
+                resultDiv.style.borderLeftColor = '#f44336';
+            }
+        }
+
+        async function testResult() {
+            const answer = document.getElementById('answerInput').value;
+            const resultDiv = document.getElementById('resultOutput');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '요청 중...';
+            
+            try {
+                const response = await fetch('http://localhost:3000/result', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ answer: answer })
+                });
+                const data = await response.json();
+                resultDiv.innerHTML = `✅ 성공!\n\n요청 데이터: ${JSON.stringify({ answer: answer }, null, 2)}\n\n응답: ${JSON.stringify(data, null, 2)}`;
+                resultDiv.style.borderLeftColor = '#4caf50';
+            } catch (error) {
+                resultDiv.innerHTML = `❌ 오류 발생!\n\n${error.message}\n\n서버가 실행 중인지 확인하세요.`;
+                resultDiv.style.borderLeftColor = '#f44336';
+            }
+        }
+    </script>
+</body>
+</html>
+
