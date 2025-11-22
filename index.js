@@ -153,6 +153,67 @@ app.get("/api/family/:code/members", (req, res) => {
   });
 });
 
+// ============================================
+// 질문 카드 관리
+// ============================================
+const questions = [
+  '가족이 함께 본 영화 중 가장 기억에 남는 것은?',
+  '가족끼리 여행 갔던 장소 중 다시 가보고 싶은 곳은?',
+  '가족과 함께한 생일 중 가장 특별했던 날은?',
+  '가족과 찍은 사진 중 가장 좋아하는 사진은?',
+  '가족과 함께한 가장 즐거웠던 순간은?',
+  '가족에게 가장 감사한 일은?',
+  '가족과 함께하고 싶은 새로운 활동은?',
+  '가족에게 가장 듣고 싶은 이야기는?',
+  '가족과 함께한 가장 웃긴 순간은?',
+  '가족에게 가장 자랑하고 싶은 것은?',
+];
+
+// 모든 질문 목록 조회
+app.get("/api/questions", (req, res) => {
+  res.json({
+    success: true,
+    questions: questions.map((question, index) => ({
+      id: index + 1,
+      question,
+    })),
+    total: questions.length,
+  });
+});
+
+// 특정 질문 조회
+app.get("/api/questions/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  
+  if (isNaN(id) || id < 1 || id > questions.length) {
+    return res.status(404).json({
+      success: false,
+      error: "질문을 찾을 수 없습니다.",
+    });
+  }
+
+  res.json({
+    success: true,
+    question: {
+      id,
+      question: questions[id - 1],
+    },
+  });
+});
+
+// 랜덤 질문 조회
+app.get("/api/questions/random", (req, res) => {
+  const randomIndex = Math.floor(Math.random() * questions.length);
+  
+  res.json({
+    success: true,
+    question: {
+      id: randomIndex + 1,
+      question: questions[randomIndex],
+    },
+  });
+});
+
 // 정적 파일 서빙은 API 라우트 뒤에 배치 (API가 우선 처리되도록)
 app.use(express.static(__dirname));
 
